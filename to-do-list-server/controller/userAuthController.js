@@ -135,6 +135,20 @@ export const isSignedIn = async (req, res) => {
     }
 }
 
+export const getUserData = async (req, res) => {
+    const { userId } = req.body
+    try {
+
+        const user = await userModel.findById(userId)
+        const userData = {
+            name: user.name,
+        }
+        res.json({ success: true, userData })
+    } catch (error) {
+        res.json({ message: error.message, success: false })
+    }
+}
+
 export const generateResetOtp = async (req, res) => {
 
 }

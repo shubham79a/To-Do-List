@@ -78,8 +78,27 @@ export const isTaskCompleted = async (req, res) => {
 
 }
 
-const deleteTask = async (req, res) => {
+export const deleteTask = async (req, res) => {
+    const { taskId, userId } = req.body
+    try {
+        if (!taskId) {
+            return res.json({ success: false, message: "id not found" })
+        }
+        const existingTask = await taskModel.findById(taskId)
+        if (!existingTask) {
+            return res.json({ message: 'task not fount', success: false })
+        }
 
+
+        await userModel.findByIdAndUpdate(userId, { $pull: { tasks: taskId } })
+        await taskModel.findByIdAndDelete(taskId)
+
+        res.json({ message: 'task deleted', success: true })
+
+
+    } catch (error) {
+        res.json({ message: error.message, success: false })
+    }
 }
 
 export const allTask = async (req, res) => {

@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import axios from 'axios'
+import { toast } from "react-toastify";
 
 export const AppContext = createContext()
 
@@ -12,7 +13,7 @@ export const AppContextProvider = (props) => {
     // passing the credentials like token to backend for security
     axios.defaults.withCredentials = true
 
-    const [tasks, setTasks] = useState()
+    const [tasks, setTasks] = useState([])
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [userData, setUserData] = useState()
 
@@ -26,39 +27,65 @@ export const AppContextProvider = (props) => {
                 setTasks(response.data.tasks)
             }
             else {
-                console.log(response.data.message)
+                toast.error(response.data.message)
             }
-            console.log(response.data)
-            console.log(response);
+
 
         } catch (error) {
-            console.log(error)
+            toast.error(error.message)
         }
 
     }
 
 
     // get auth status of user while loading the site 
-    const getAuthStatus = async (req, res) => {
+    const getAuthStatus = async () => {
         try {
             const response = await axios.get(backendUrl + '/api/user/auth-status', {}, {})
             if (response.data.success) {
                 setIsLoggedIn(true)
-                getAllTask()
+            }
+            else {
+                toast.error(response.data.message)
             }
 
         } catch (error) {
-            console.log(error)
+            toast.error(error.message)
         }
     }
+
+
+    const getUserDetails = async (req, res) => {
+        try {
+
+            const response = await axios.get(backendUrl + '/api/user/user-data')
+            if (response.data.success) {
+                setUserData(response.data.userData)
+                console.log(response.data)
+            }
+            else {
+                toast.error(response.data.message)
+            }
+
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+
+    useEffect(() => {
+        getAllTask()
+        getUserDetails()
+    }, [])
 
     useEffect(() => {
         getAuthStatus()
     })
 
     const value = {
-        backendUrl, isLoggedIn, setIsLoggedIn
+        backendUrl, isLoggedIn, setIsLoggedIn, tasks, getAllTask,
+        userData, getUserDetails
     }
+
 
     return (
         <AppContext.Provider value={value}>

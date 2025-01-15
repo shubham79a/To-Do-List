@@ -1,5 +1,5 @@
 
-import { addTask, allTask, isTaskCompleted, updateTask } from '../controller/taskController.js';
+import { addTask, allTask, deleteTask, isTaskCompleted, updateTask } from '../controller/taskController.js';
 
 import express from 'express';
 import { userAuth } from '../middleware/userAuth.js';
@@ -12,8 +12,9 @@ const taskRouter = express.Router()
 
 taskRouter.post('/add', userAuth, addTask)
 taskRouter.post('/update', userAuth, updateTask)
-taskRouter.get('/all-task',  allTask)
+taskRouter.get('/all-task', userAuth, allTask)
 taskRouter.post('/is-complete', userAuth, isTaskCompleted)
-
+taskRouter.post('/delete',userAuth,deleteTask)
+taskRouter.post('/is-task-completed',userAuth,isTaskCompleted)
 
 export default taskRouter
